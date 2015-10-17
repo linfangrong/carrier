@@ -13,5 +13,5 @@
 sh install.sh
 
 ## 感谢
-https://github.com/3xian
-https://github.com/samuelduann
++ https://github.com/3xian
++ https://github.com/samuelduann
