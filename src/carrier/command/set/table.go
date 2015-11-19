@@ -144,7 +144,7 @@ var CommandTable []command.Command = []command.Command{
 
 	// HyperLogLog
 	command.NewCommand([]byte("PFADD"), process.ProcKeyCommand, -2, false, false),
-	command.NewCommand([]byte("PFCOUNT"), process.ForbiddenCommand, -2, true, false),
+	command.NewCommand([]byte("PFCOUNT"), process.ProcKeyCommand, 2, true, false),
 	command.NewCommand([]byte("PFMERGE"), process.ForbiddenCommand, -2, false, false),
 
 	// Pub/Sub
