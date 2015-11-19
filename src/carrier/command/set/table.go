@@ -118,12 +118,12 @@ var CommandTable []command.Command = []command.Command{
 	command.NewCommand([]byte("SCRIPT"), process.ForbiddenCommand, -2, true, true),
 
 	// Geo
-	command.NewCommand([]byte("GEOADD"), process.ForbiddenCommand, -5, false, false),
-	command.NewCommand([]byte("GEODIST"), process.ForbiddenCommand, -4, true, false),
-	command.NewCommand([]byte("GEOHASH"), process.ForbiddenCommand, -2, true, false),
-	command.NewCommand([]byte("GEOPOS"), process.ForbiddenCommand, -2, true, false),
-	command.NewCommand([]byte("GEORADIUS"), process.ForbiddenCommand, -6, true, false),
-	command.NewCommand([]byte("GEORADIUSBYMEMBER"), process.ForbiddenCommand, -5, true, false),
+	command.NewCommand([]byte("GEOADD"), process.ProcKeyCommand, -5, false, false),
+	command.NewCommand([]byte("GEODIST"), process.ProcKeyCommand, -4, true, false),
+	command.NewCommand([]byte("GEOHASH"), process.ProcKeyCommand, -2, true, false),
+	command.NewCommand([]byte("GEOPOS"), process.ProcKeyCommand, -2, true, false),
+	command.NewCommand([]byte("GEORADIUS"), process.ProcKeyCommand, -6, true, false),
+	command.NewCommand([]byte("GEORADIUSBYMEMBER"), process.ProcKeyCommand, -5, true, false),
 
 	// Hashes
 	command.NewCommand([]byte("HDEL"), process.ProcKeyCommand, -3, false, false),
