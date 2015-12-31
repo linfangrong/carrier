@@ -66,7 +66,7 @@ func NewCluster(
 				server string = serverList[rand.Intn(len(serverList))]
 			)
 			if err = c.refresh(server); err != nil {
-				logger.Info("节点(%s):刷新cluster slots出错(%v)", server, err)
+				logger.Infof("节点(%s):刷新cluster slots出错(%v)", server, err)
 			}
 		}
 	}()
@@ -101,7 +101,7 @@ func (c *cluster) refresh(server string) (err error) {
 			slotsMsgAckValueArrays []protocol.Message = slotsMsgAckValue.GetArraysValue()
 			nodeMsgValue           protocol.Message
 			nodeMsgValueArrays     []protocol.Message
-			connPoolList           []connection.Pool
+			connPoolList           []connection.Pool = make([]connection.Pool, 0, slotsMsgAckValue.GetIntegersValue()-2)
 		)
 		if slotsMsgAckValueArrays[0].GetProtocolType() != protocol.IntegersType || slotsMsgAckValueArrays[1].GetProtocolType() != protocol.IntegersType {
 			return fmt.Errorf("slots节点起始或者结束数据无效")

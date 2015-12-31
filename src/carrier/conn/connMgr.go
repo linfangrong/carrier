@@ -43,6 +43,7 @@ func getBroadcastConn() (carrierConnList []Conn) {
 		carrierConn Conn
 		ok          bool
 	)
+	carrierConnList = make([]Conn, 0, len(dict))
 	for _, value = range dict {
 		if carrierConn, ok = value.(Conn); !ok {
 			continue
