@@ -1,0 +1,6 @@
+package: .
+import:
+- package: github.com/go-ini/ini
+  version: v1.30.3
+testImport:
+- package: gopkg.in/check.v1
