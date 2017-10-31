@@ -13,3 +13,6 @@ fmt:
 install:
 	@echo "install..."
 	go install carrier/carrier_svr
+
+glide:
+	glide up

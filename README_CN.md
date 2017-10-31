@@ -11,7 +11,16 @@
 + 支持的命令略多。
 
 ## 安装
-sh install.sh
++ 预先安装包管理glide
+```bash
+go get github.com/Masterminds/glide
+go install github.com/Masterminds/glide
+```
++ 安装carrier
+```bash
+make glide
+make
+```
 
 ## 支持命令如下(大部分是多key，还有管理命令)
 + String: 不支持BITOP、MSETNX。
