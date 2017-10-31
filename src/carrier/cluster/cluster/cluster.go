@@ -18,10 +18,9 @@ type Cluster interface {
 }
 
 type cluster struct {
-	sync.RWMutex
-	refreshInterval time.Duration              // cluster 刷新间隔
-	clusterNodePool map[string]connection.Pool // cluster 节点连接池
-	clusterSlots    slots.Slots                // cluster slots信息
+	refreshInterval time.Duration // cluster 刷新间隔
+	clusterNodePool *sync.Map     // cluster 节点连接池
+	clusterSlots    slots.Slots   // cluster slots信息
 
 	// 连接池配置
 	maxIdle             int
@@ -42,7 +41,7 @@ func NewCluster(
 
 	var c *cluster = &cluster{
 		refreshInterval:     refreshInterval,
-		clusterNodePool:     make(map[string]connection.Pool),
+		clusterNodePool:     new(sync.Map),
 		clusterSlots:        slots.NewSlots(),
 		maxIdle:             maxIdle,
 		testOnBorrowTimeout: testOnBorrowTimeout,
@@ -132,13 +131,13 @@ func (c *cluster) refresh(server string) (err error) {
 }
 
 func (c *cluster) GetNodePool(server string) (connPool connection.Pool) {
-	var ok bool
-	c.RLock()
-	if connPool, ok = c.clusterNodePool[server]; ok {
-		c.RUnlock()
-		return
+	var (
+		value interface{}
+		ok    bool
+	)
+	if value, ok = c.clusterNodePool.Load(server); ok {
+		return value.(connection.Pool)
 	}
-	c.RUnlock()
 
 	var (
 		newFn func() (connection.Conn, error) = func() (conn connection.Conn, err error) {
@@ -159,9 +158,10 @@ func (c *cluster) GetNodePool(server string) (connPool connection.Pool) {
 	)
 	connPool = connection.NewPool(c.maxIdle, newFn, testOnBorrow)
 
-	c.Lock()
-	c.clusterNodePool[server] = connPool
-	c.Unlock()
+	if value, ok = c.clusterNodePool.LoadOrStore(server, connPool); ok {
+		connPool.Close()
+		return value.(connection.Pool)
+	}
 	return
 }
 

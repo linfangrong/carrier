@@ -13,20 +13,15 @@ type Slots interface {
 }
 
 type slots struct {
-	sync.RWMutex
-	data map[uint16]nodes.Nodes
+	sync.Map
 }
 
 func NewSlots() Slots {
-	return &slots{
-		data: make(map[uint16]nodes.Nodes),
-	}
+	return &slots{}
 }
 
 func (s *slots) AddSlot(slot int64, nodes nodes.Nodes) {
-	s.Lock()
-	s.data[uint16(slot)] = nodes
-	s.Unlock()
+	s.Store(uint16(slot), nodes)
 }
 
 func (s *slots) AddSlots(begin int64, end int64, nodes nodes.Nodes) {
@@ -35,16 +30,15 @@ func (s *slots) AddSlots(begin int64, end int64, nodes nodes.Nodes) {
 	}
 }
 
-func (s *slots) GetSlot(slot uint16) (nodes nodes.Nodes, ok bool) {
-	s.RLock()
-	nodes, ok = s.data[slot]
-	s.RUnlock()
+func (s *slots) GetSlot(slot uint16) (_nodes nodes.Nodes, ok bool) {
+	var value interface{}
+	if value, ok = s.Load(slot); ok {
+		_nodes = value.(nodes.Nodes)
+	}
 	return
 }
 
 func (s *slots) GetSlotsCount() (l int) {
-	s.RLock()
-	l = len(s.data)
-	s.RUnlock()
-	return
+	// TODO
+	return 0
 }
