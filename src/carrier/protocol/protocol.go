@@ -1,6 +1,5 @@
 package protocol
 
-// TODO 自己实现 strconv.ParseInt
 import (
 	"bufio"
 	"bytes"
@@ -78,6 +77,7 @@ func (msg *message) readSimpleStrings(br *bufio.Reader) (err error) {
 	}
 	msg.protocolType = SimpleStringsType
 	msg.bytesValue = bytesValue[1 : len(bytesValue)-2]
+	msg.rawBytesBuffer.Reset()
 	if err = binary.Write(msg.rawBytesBuffer, binary.BigEndian, bytesValue); err != nil {
 		return
 	}
@@ -94,6 +94,7 @@ func (msg *message) readErrorsStrings(br *bufio.Reader) (err error) {
 	}
 	msg.protocolType = ErrorsStringsType
 	msg.bytesValue = bytesValue[1 : len(bytesValue)-2]
+	msg.rawBytesBuffer.Reset()
 	if err = binary.Write(msg.rawBytesBuffer, binary.BigEndian, bytesValue); err != nil {
 		return
 	}
@@ -111,11 +112,12 @@ func (msg *message) readIntegers(br *bufio.Reader) (err error) {
 	if !bytes.HasSuffix(bytesValue, crlfSuffix) {
 		return parseCRLFError
 	}
-	if integersValue, err = strconv.ParseInt(string(bytesValue[1:len(bytesValue)-2]), 10, 64); err != nil {
+	if integersValue, _, err = parseInt(bytesValue[1 : len(bytesValue)-2]); err != nil {
 		return
 	}
 	msg.protocolType = IntegersType
 	msg.integersValue = integersValue
+	msg.rawBytesBuffer.Reset()
 	if err = binary.Write(msg.rawBytesBuffer, binary.BigEndian, bytesValue); err != nil {
 		return
 	}
@@ -126,6 +128,7 @@ func (msg *message) readBulkStrings(br *bufio.Reader) (err error) {
 	var (
 		bytesValue    []byte
 		integersValue int64
+		integersNeg   bool
 	)
 	if bytesValue, err = br.ReadBytes(lfSuffix); err != nil {
 		return
@@ -133,15 +136,16 @@ func (msg *message) readBulkStrings(br *bufio.Reader) (err error) {
 	if !bytes.HasSuffix(bytesValue, crlfSuffix) {
 		return parseCRLFError
 	}
-	if integersValue, err = strconv.ParseInt(string(bytesValue[1:len(bytesValue)-2]), 10, 64); err != nil {
+	if integersValue, integersNeg, err = parseInt(bytesValue[1 : len(bytesValue)-2]); err != nil {
 		return
 	}
 	msg.protocolType = BulkStringsType
 	msg.integersValue = integersValue
+	msg.rawBytesBuffer.Reset()
 	if err = binary.Write(msg.rawBytesBuffer, binary.BigEndian, bytesValue); err != nil {
 		return
 	}
-	if integersValue < 0 {
+	if integersNeg {
 		return
 	}
 	var (
@@ -168,6 +172,7 @@ func (msg *message) readArrays(br *bufio.Reader) (err error) {
 	var (
 		bytesValue    []byte
 		integersValue int64
+		integersNeg   bool
 	)
 	if bytesValue, err = br.ReadBytes(lfSuffix); err != nil {
 		return
@@ -175,15 +180,16 @@ func (msg *message) readArrays(br *bufio.Reader) (err error) {
 	if !bytes.HasSuffix(bytesValue, crlfSuffix) {
 		return parseCRLFError
 	}
-	if integersValue, err = strconv.ParseInt(string(bytesValue[1:len(bytesValue)-2]), 10, 64); err != nil {
+	if integersValue, integersNeg, err = parseInt(bytesValue[1 : len(bytesValue)-2]); err != nil {
 		return
 	}
 	msg.protocolType = ArraysType
 	msg.integersValue = integersValue
+	msg.rawBytesBuffer.Reset()
 	if err = binary.Write(msg.rawBytesBuffer, binary.BigEndian, bytesValue); err != nil {
 		return
 	}
-	if integersValue < 0 {
+	if integersNeg {
 		return
 	}
 	var (
