@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/linfangrong/carrier/models/command/command"
+	"github.com/linfangrong/carrier/models/command/process"
 	CommandSet "github.com/linfangrong/carrier/models/command/set"
 	"github.com/linfangrong/carrier/models/protocol"
 	"github.com/linfangrong/carrier/utils/socket"
@@ -14,7 +16,7 @@ import (
 func main() {
 
 	c := CommandSet.NewCommandTree()
-	c.AddCommand([]byte("aBcD"), CommandSet.NewCommand())
+	c.AddCommand([]byte("aBcD"), command.NewCommand([]byte("APPEND"), process.ProcKeyCommand, 3, false, false))
 
 	fmt.Println(c.SearchCommand([]byte("ABCD")))
 	fmt.Println(c.SearchCommand([]byte("AbCD")))

@@ -8,3 +8,6 @@ fmt:
 
 carrier_svr:
 	go build -o bin/carrier_svr ./cmd/carrier_svr
+
+demo:
+	go build -o bin/demo ./cmd/demo
