@@ -1,5 +1,5 @@
 export GO111MODULE=on
-export GOPROXY=https://mirrors.aliyun.com/goproxy/
+export GOPROXY=https://goproxy.cn,direct
 
 default: fmt carrier_svr
 
