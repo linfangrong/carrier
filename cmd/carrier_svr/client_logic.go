@@ -7,7 +7,7 @@ import (
 )
 
 func ClientLogic(connClient net.Conn) {
-	// TODO 对连接做处理(IP限制什么鬼的)
+	// TODO 对连接做处理(IP限制)
 	// TODO AUTH
 
 	var (
